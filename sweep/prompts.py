@@ -63,7 +63,10 @@ DEMO_PROMPTS = {
     "desert": "sand dunes in the desert at noon", "portrait": "a studio portrait of an old man with a grey beard",
     "boat": "a wooden rowing boat on a calm river", "forest": "a path through a pine forest in winter snow",
 }
+FAMOUS_PROMPTS = {"elon": "a photo of Elon Musk", "zuck": "a photo of Mark Zuckerberg"}
 SWEEP_PROMPTS.update(DEMO_PROMPTS)
+SWEEP_PROMPTS.update(FAMOUS_PROMPTS)
+SEEDS.update({k: 3001 + i for i, k in enumerate(FAMOUS_PROMPTS)})
 SEEDS.update({k: 2001 + i for i, k in enumerate(DEMO_PROMPTS)})
 DEMO = ",".join(DEMO_PROMPTS)
 
