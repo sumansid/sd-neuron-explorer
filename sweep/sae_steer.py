@@ -60,7 +60,11 @@ def main():
     ap.add_argument("--thumb", type=int, default=160)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--mask", default="", help="clamp only part of the image: 'top:0.5' = the top half of token rows, "
-                    "'bottom:0.4', 'left:0.5', 'right:0.5', 'band:0.35:0.55' (rows between two fractions)")
+                    "'bottom:0.4', 'left:0.5', 'right:0.5', 'band:0.35:0.55' (rows between two fractions), or 'auto:0.4' = "
+                    "leave the subject alone: the 40% of tokens whose block output depends most on the prompt (same seed, "
+                    "empty prompt as the reference) are left unclamped")
+    ap.add_argument("--push", default="", help="also push neurons while clamping, e.g. '68:151:0.5,68:485:-0.3' = "
+                    "layer:neuron:rel dose (unit = the layer's median residual norm from stats/<model>.json)")
     ap.add_argument("--size", type=int, default=512, help="image side in px (the token grid scales with it)")
     ap.add_argument("--steps", type=int, default=0, help="denoising steps (0 = the model's default)")
     ap.add_argument("--full-vae", action="store_true", help="decode with the full VAE instead of the tiny one")
@@ -107,12 +111,32 @@ def main():
     units = [("clamp", f) for f in feats] + [("clamp_random", f) for f in rand]
     G = int(round(sd.t_img ** 0.5))  # token grid side at this resolution
     tok_mask = torch.ones(G * G, device=dev)
-    if a.mask:
+    if a.mask and not a.mask.startswith("auto"):
         parts = a.mask.split(":"); side, frac = parts[0], float(parts[1])
         rows = torch.arange(G * G, device=dev) // G; cols = torch.arange(G * G, device=dev) % G
         tok_mask = {"top": rows < frac * G, "bottom": rows >= (1 - frac) * G, "left": cols < frac * G,
                     "right": cols >= (1 - frac) * G,
                     "band": (rows >= frac * G) & (rows < float(parts[2]) * G) if side == "band" else None}[side].float()
+    masks = {}
+    if a.mask.startswith("auto"):
+        frac = float(a.mask.split(":")[1]) if ":" in a.mask else 0.4
+        for p, (text, seed) in prompts.items():
+            got = {}
+            with sd.capturing([li], lambda l, o: None, lambda l, out: got.__setitem__(l, out.float())):
+                sd.generate([text, ""], [seed, seed])
+            h = got[li]
+            diff = (h[0] - h[1]).norm(dim=-1)  # [T] how much each token's output depends on the prompt
+            thresh = diff.topk(max(1, int(frac * diff.numel()))).values.min()
+            masks[p] = (diff < thresh).float()  # 1 = background (clamped), 0 = subject (left alone)
+            print(f"auto mask {p}: {int(masks[p].sum())}/{diff.numel()} tokens clamped", flush=True)
+    pushes = []
+    if a.push:
+        stats_path = f"stats/{ {'sdxl': 'sdxl-turbo'}.get(model, model) }.json"
+        unit_of = {x["layer"]: x["resid_norm_q10_50_90"][1] for x in json.load(open(stats_path))}
+        for part in a.push.split(","):
+            l, n, d = part.split(":")
+            pushes.append((int(l), int(n), float(d), unit_of[int(l)]))
+        print("extra pushes:", pushes)
     fam = lambda x: list(x) if isinstance(x, tuple) else [x]
     scale = {f: float(fmax[:, f].max()) for _, f in units}  # reported scale: the first layer's (first) feature
     scales = {f: {l: {ff: float(fmaxs[l][:, ff].max()) for ff in fam(g)} for l, g in zip(layers, group_of[f])} for _, f in units}
@@ -132,6 +156,14 @@ def main():
         # all rows of a batch share one feature (or are baselines); per-row target in absolute units, NaN = untouched
         f = next((j["neuron"] for j in batch if j["kind"] != "baseline"), None)
         tgt = torch.tensor([j["target_abs"] if j["kind"] != "baseline" else float("nan") for j in batch], device=dev)
+        B = len(batch)
+        tm = torch.stack([masks[j["prompt"]] for j in batch]) if masks else tok_mask[None].expand(B, -1)  # [B, T]
+        extra = None
+        if f is not None and pushes:
+            extra = {}
+            for l, n, d, unit in pushes:
+                v = sd.push_for(l, "neuron", n, d, unit)  # [dim]
+                extra[l] = extra.get(l, 0) + v[None].expand(B, -1)
         if f is not None:
             mult = torch.tensor([j["dose"] if j["kind"] != "baseline" else float("nan") for j in batch], device=dev)
             edits = {}
@@ -151,7 +183,7 @@ def main():
                         pre = (xs - s_.b_pre) @ enc_w + enc_b  # [B, T, n]
                         act = torch.relu(pre)
                         delta = t_abs[:, None, :] - act  # [B, T, n]
-                        delta = torch.where(torch.isnan(delta), torch.zeros_like(delta), delta) * tok_mask[None, :, None]
+                        delta = torch.where(torch.isnan(delta), torch.zeros_like(delta), delta) * tm[:, :, None]
                         return (hid.float() + delta @ dec).to(hid.dtype)
                     return edit
                 edits[l] = make()
@@ -160,13 +192,15 @@ def main():
             import contextlib
             ctx = contextlib.nullcontext()
         with ctx:
-            img = sd.generate([prompts[j["prompt"]][0] for j in batch], [j["seed"] for j in batch], full_vae=a.full_vae)
+            img = sd.generate([prompts[j["prompt"]][0] for j in batch], [j["seed"] for j in batch], pushes=extra, full_vae=a.full_vae)
         emb = lens.embed_images(img)
         return img, pixel_metrics(img), emb, lens.attribute_scores(emb)
 
     bjobs = [j for j in jobs if j["kind"] == "baseline"]
     img, pm, emb, attr = run_batch(bjobs)
     base = {j["prompt"]: (img[i], emb[i], attr[i], {k: float(v[i]) for k, v in pm.items()}) for i, j in enumerate(bjobs)}
+    for p, m in masks.items():
+        Image.fromarray((m.reshape(G, G).cpu().numpy() * 255).astype(np.uint8)).resize((a.thumb, a.thumb), Image.NEAREST).save(f"{tdir}/mask_{p}.png")
     out = open(f"runs/{run}.jsonl", "w")
     rows = []
     t0 = time.time()
@@ -212,7 +246,7 @@ def main():
                "dose_unit": "feature_max_multiple", "attributes": lens.attributes, "random_controls": len(rand),
                "n_neurons": len(feats), "concept": "sae", "text": a.text, "probe": True, "model": model,
                "feature_scale": scale, "layers": layers, "mask": a.mask, "groups": {str(k): [fam(x) for x in v] for k, v in group_of.items()}, "size": a.size, "steps": sd.steps,
-               "from_step": a.from_step, "to_step": a.to_step}, open(f"runs/{run}.meta.json", "w"), indent=1)
+               "from_step": a.from_step, "to_step": a.to_step, "push": a.push}, open(f"runs/{run}.meta.json", "w"), indent=1)
 
     # report + sheets
     print(f"\nΔcos to '{a.text}' (mean over prompts), cos to baseline image; controls are random alive features")
