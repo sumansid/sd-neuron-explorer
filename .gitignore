@@ -22,3 +22,8 @@ artifact/
 site-text.md
 site-text.txt
 inputs/
+
+# figure, collage and clip builders and one-off render batches for the write-up, not part of the tool
+make_*.py
+sweep/famous_render*.sh
+sweep/weird_render*.sh
