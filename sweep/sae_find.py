@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 class SAE:
     def __init__(self, path, device="cuda"):
         d = torch.load(path, map_location=device)
-        self.W_enc, self.b_enc, self.W_dec, self.b_pre = d["W_enc"], d["b_enc"], d["W_dec"], d["b_pre"]
+        self.W_enc, self.b_enc, self.W_dec, self.b_pre = (d[k].float() for k in ("W_enc", "b_enc", "W_dec", "b_pre"))
         self.mu, self.sigma, self.k, self.layer = d["mu"], d["sigma"], d["k"], d["layer"]
         self.F = self.W_dec.shape[0]
         self.info = {k: d[k] for k in ("fvu", "dead", "n_tokens", "features")}
