@@ -40,8 +40,7 @@ Results written by the sweeps live in `runs/` and `thumbs/` and are not part of 
     sweep/           the experiments: stats, contrast search, sweeps, ranking, probes, SAE collect/train/find/steer, bridge hunt
     explorer/        the browser tool: FastAPI server, static UI, Claude assistant, cross-layer connection builder
     setup.sh sweep.sh explore.sh   the three scripts above
-    runs/ stats*/ thumbs/ sae/ gallery/ sheets/   written by the sweeps, not in git 
-    research_log.md  the day-by-day log of what was tried and found
+    runs/ stats*/ thumbs/ sae/ gallery/ sheets/   written by the sweeps, not in git
 
 SDXL-Turbo is a one-step model, so one image is one UNet forward pass: a neuron fires once per image and its
 causal effect is one picture.
@@ -101,7 +100,7 @@ offloaded after the known prompts are encoded. Every sweep script takes `--model
     python sweep/probe.py --model flux --concept goldengate --vectors 21+24+25+26 --vec-drop-top 256 --doses=0.05,0.07,0.1 --text "the Golden Gate Bridge"
 
 On FLUX a few massive-activation channels dominate every mean-difference vector; `--vec-drop-top 256` removes them,
-after which doses of 0.05–0.1 (fractions of the residual norm) insert the concept. See `research_log.md`.
+after which doses of 0.05–0.1 (fractions of the residual norm) insert the concept.
 
 ## Sparse autoencoder features (FLUX)
 

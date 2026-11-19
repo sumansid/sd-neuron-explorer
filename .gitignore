@@ -27,3 +27,13 @@ inputs/
 make_*.py
 sweep/famous_render*.sh
 sweep/weird_render*.sh
+research_log.md
+sweep/more_figures.py
+sweep/pair_figures.py
+sweep/neuron_cards.py
+sweep/make_gallery.py
+sweep/best_of.py
+sweep/dog_demo.sh
+sweep/gg_*.sh
+sweep/hunt_*.sh
+sweep/bridge_hunt.sh
