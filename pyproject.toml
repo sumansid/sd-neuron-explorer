@@ -1,0 +1,20 @@
+[project]
+name = "sd-neuron-explorer"
+version = "0.1.0"
+description = "Steering-first neuron explorer for the SDXL-Turbo UNet: push every feed-forward neuron up and down, keep every image, rank against random-direction controls."
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.4",
+    "diffusers>=0.31",
+    "transformers>=4.44",
+    "accelerate",
+    "safetensors",
+    "numpy",
+    "pillow",
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+]
+
+[tool.setuptools]
+packages = ["sd_explorer"]

@@ -1,0 +1,295 @@
+[
+ {
+  "id": "goldengate",
+  "label": "Golden Gate",
+  "emoji": "\ud83c\udf09",
+  "model": "flux",
+  "layer": 24,
+  "kind": "clamp",
+  "neuron": 13287,
+  "dose": 2.5,
+  "mask": "band:0.3:0.55",
+  "doses": [
+   1.5,
+   2,
+   2.5,
+   3
+  ],
+  "unit": "\u00d7 corpus max",
+  "note": "SAE feature 13287 at block s5, clamped on a horizon band. Works on open outdoor scenes; close-ups only get lattice."
+ },
+ {
+  "id": "gg2",
+  "label": "Golden Gate (2 neurons)",
+  "emoji": "\ud83c\udf09",
+  "model": "sdxl",
+  "layer": 17,
+  "kind": "neuron",
+  "neuron": 868,
+  "dose": 1,
+  "units": [
+   {
+    "layer": 17,
+    "kind": "neuron",
+    "neuron": 868,
+    "dose": 2
+   },
+   {
+    "layer": 18,
+    "kind": "neuron",
+    "neuron": 695,
+    "dose": 2
+   }
+  ],
+  "doses": [
+   0.5,
+   0.75,
+   1,
+   1.25
+  ],
+  "unit": "\u00d7 the pair's doses (+2, +2)",
+  "note": "SDXL L17 N868 + L18 N695, the bridge hunt's answer: every prompt becomes a suspension bridge, towers and cables included. The slider scales both pushes."
+ },
+ {
+  "id": "gg2_gentle",
+  "label": "Golden Gate (2 neurons, gentle)",
+  "emoji": "\ud83c\udf09",
+  "model": "sdxl",
+  "layer": 17,
+  "kind": "neuron",
+  "neuron": 868,
+  "dose": 1,
+  "units": [
+   {
+    "layer": 17,
+    "kind": "neuron",
+    "neuron": 868,
+    "dose": 1.0
+   },
+   {
+    "layer": 18,
+    "kind": "neuron",
+    "neuron": 695,
+    "dose": 1.0
+   }
+  ],
+  "doses": [
+   0.5,
+   0.75,
+   1,
+   1.25
+  ],
+  "unit": "\u00d7 the pair's doses (+2, +2)",
+  "note": "The same pair at half strength (+1, +1): the bridge arrives and more of the scene survives (mean similarity 0.77 vs 0.69 at full strength; the Golden Gate is CLIP's top shift on 5 of 12 prompts). Slide above 1 for the full-strength version."
+ },
+ {
+  "id": "bridge",
+  "label": "Bridge",
+  "emoji": "\ud83c\udf01",
+  "model": "sdxl",
+  "layer": 17,
+  "kind": "neuron",
+  "neuron": 868,
+  "dose": 2,
+  "doses": [
+   1,
+   1.5,
+   2,
+   2.5
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L17 N868 pushed up: a bridge appears in every prompt (arch or girder); +2 is the sweet spot, more is not better."
+ },
+ {
+  "id": "susp",
+  "label": "Suspension bridge",
+  "emoji": "\ud83c\udf09",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 695,
+  "dose": 1.5,
+  "doses": [
+   2,
+   2.5,
+   3,
+   3.5
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N695, the suspension-bridge neuron. At +1 to +2 it adds a suspension bridge and keeps the subject (boat, dog, street, portrait; similarity 0.92 at +1, 0.83 at +2); at +3 the subject gives way to towers. Pushed down on bridge prompts it removes the Golden Gate."
+ },
+ {
+  "id": "dog",
+  "label": "Dog",
+  "emoji": "\ud83d\udc15",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 2683,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2,
+   -2.5
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N2683 pushed down: every prompt becomes a dog that keeps the prompt's world."
+ },
+ {
+  "id": "horror",
+  "label": "Fire & horror",
+  "emoji": "\ud83d\udd25",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 5097,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2,
+   -2.5
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N5097 pushed down: fire breaks out and faces double and melt. The closest thing to an 'evil' unit in the sweeps."
+ },
+ {
+  "id": "robot",
+  "label": "Buzz Lightyear",
+  "emoji": "\ud83d\ude80",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 1505,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N1505 pushed down: every subject becomes Buzz Lightyear, including the fruit bowl."
+ },
+ {
+  "id": "bird",
+  "label": "Bird of prey",
+  "emoji": "\ud83e\udd85",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 1532,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N1532 pushed down: an eagle takes the subject's place; the portrait grows wings."
+ },
+ {
+  "id": "anime",
+  "label": "Anime child",
+  "emoji": "\ud83d\udc67",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 300,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N300 pushed down: anime-style children."
+ },
+ {
+  "id": "aerial",
+  "label": "Aerial view",
+  "emoji": "\ud83d\udef0\ufe0f",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 976,
+  "dose": 2,
+  "doses": [
+   1,
+   1.5,
+   2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N976 pushed up: the scene seen from above (CLIP misreads these maps as bridges)."
+ },
+ {
+  "id": "eye",
+  "label": "Eye",
+  "emoji": "\ud83d\udc41\ufe0f",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 297,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N297 pushed down: the frame becomes a close-up of an eye."
+ },
+ {
+  "id": "oldman",
+  "label": "Old face",
+  "emoji": "\ud83d\udc74",
+  "model": "sdxl",
+  "layer": 18,
+  "kind": "neuron",
+  "neuron": 3462,
+  "dose": -2,
+  "doses": [
+   -1,
+   -1.5,
+   -2
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L18 N3462 pushed down: a weathered face replaces the subject (the car became a man in a red jacket)."
+ },
+ {
+  "id": "bright",
+  "label": "Brightness",
+  "emoji": "\ud83d\udd06",
+  "model": "sdxl",
+  "layer": 68,
+  "kind": "neuron",
+  "neuron": 151,
+  "dose": 1,
+  "doses": [
+   -1,
+   -0.5,
+   0.5,
+   1
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L68 N151: a brightness dial in the last up block, both directions."
+ },
+ {
+  "id": "sat",
+  "label": "Saturation",
+  "emoji": "\ud83c\udfa8",
+  "model": "sdxl",
+  "layer": 68,
+  "kind": "neuron",
+  "neuron": 485,
+  "dose": 1,
+  "doses": [
+   -1,
+   -0.5,
+   0.5,
+   1
+  ],
+  "unit": "\u00d7 residual norm",
+  "note": "L68 N485: a saturation dial in the last up block, both directions."
+ }
+]

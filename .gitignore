@@ -1,0 +1,23 @@
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# results written by the sweeps, not kept in git
+runs/
+thumbs/
+stats/
+stats-flux/
+stats-flux3/
+sae/
+sheets/
+gallery/
+explorer/cache/
+explorer/names.json
+
+# the write-up site is kept out of this repo
+site/
+artifact/
+site-text.md
+site-text.txt
