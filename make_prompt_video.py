@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 BG=(250,249,246); INK=(28,28,28); MUTE=(110,110,110); ACC=(190,60,40)
 def font(sz,bold=False): return ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc",sz,index=1 if bold else 0)
 W=H=1080; S=820; X=(W-S)//2; Y=225; FPS=24
-HOLD0, HOLD, FADE, END = 1.5, 0.85, 0.15, 2.5
+HOLD0, HOLD, FADE, END = 1.5, 0.8, 0.15, 2.5
 LINK="sumansigdel.com/golden-gate-sdxl"
 # name -> path template ({s} = scene)
 N={"Eye neuron":"gallery/eye_full/{s}_steered.jpg","Buzz Lightyear neuron":"gallery/buzz_full/{s}_steered.jpg","Bird of prey neuron":"gallery/bird_full/{s}_steered.jpg",
@@ -16,7 +16,16 @@ N={"Eye neuron":"gallery/eye_full/{s}_steered.jpg","Buzz Lightyear neuron":"gall
  "White flowers neuron":"thumbs/demo-new-L46/n456_{s}_-2.jpg","Van Gogh neuron":"thumbs/demo-new3-L46/n2063_{s}_+2.jpg","Herd neuron":"thumbs/demo-new3-L18/n3204_{s}_+2.jpg",
  "Faces everywhere neuron":"thumbs/demo-new3-L46/n4429_{s}_-2.jpg","Crowd of faces neuron":"thumbs/demo-weird-L46/n5_{s}_+1.jpg","Car neuron":"thumbs/demo-new-L18/n1232_{s}_+2.jpg",
  "Woman neuron":"thumbs/demo-new3-L18/n4782_{s}_+2.jpg","Fur neuron":"thumbs/demo-new-L46/n3969_{s}_-2.jpg","Barrels neuron":"thumbs/demo-weird-L18/n568_{s}_-2.jpg","Persian rug neuron":"thumbs/demo-weird-L18/n2886_{s}_-2.jpg",
- "Clock face neuron":"thumbs/demo-new-L18/n3569_{s}_+2.jpg","Ink drawing neuron":"thumbs/demo-new3-L46/n1565_{s}_-2.jpg","Mona Lisa neuron":"thumbs/famous-L18/n216_{s}_+2.jpg","Old master neuron":"thumbs/famous-L18/n3641_{s}_-2.jpg","New York neuron":"thumbs/famous-L18/n938_{s}_-2.jpg","Christmas neuron":"thumbs/famous-L46/n2894_{s}_+1.jpg","Fairy lights neuron":"thumbs/famous-L46/n2174_{s}_-1.jpg"}
+ "Clock face neuron":"thumbs/demo-new-L18/n3569_{s}_+2.jpg","Ink drawing neuron":"thumbs/demo-new3-L46/n1565_{s}_-2.jpg","Mona Lisa neuron":"thumbs/famous-L18/n216_{s}_+2.jpg","Old master neuron":"thumbs/famous-L18/n3641_{s}_-2.jpg","New York neuron":"thumbs/famous-L18/n938_{s}_-2.jpg","Christmas neuron":"thumbs/famous-L46/n2894_{s}_+1.jpg","Fairy lights neuron":"thumbs/famous-L46/n2174_{s}_-1.jpg",
+ "Plush toy neuron":"thumbs/famous2-L18/n3771_{s}_-2.jpg","Bronze medallion neuron":"thumbs/famous2-L18/n4249_{s}_-2.jpg","Oscar statue neuron":"thumbs/famous2-L18/n343_{s}_+2.jpg",
+ "Tattoo neuron":"thumbs/famous2-L18/n1567_{s}_-2.jpg","Mannequin neuron":"thumbs/famous2-L18/n3001_{s}_-2.jpg","Cowboy hat neuron":"thumbs/famous2-L18/n4034_{s}_-2.jpg",
+ "Gorilla neuron":"thumbs/famous2-L18/n4868_{s}_+2.jpg","Mech robot neuron":"thumbs/famous2-L18/n2987_{s}_+2.jpg","Funko Pop neuron":"thumbs/famous2-L18/n3335_{s}_+2.jpg",
+ "3D cartoon neuron":"thumbs/famous2-L18/n1226_{s}_-2.jpg","Comic strip neuron":"thumbs/famous2-L18/n3704_{s}_+2.jpg","Cake neuron":"thumbs/famous2-L18/n4096_{s}_-2.jpg",
+ "Beard neuron":"thumbs/famous2-L18/n2385_{s}_+2.jpg","Gilded frame neuron":"thumbs/famous2-L18/n893_{s}_+2.jpg","Pop art neuron":"thumbs/famous2-L46/n2384_{s}_+2.jpg",
+ "Lego neuron":"thumbs/famous2-L46/n888_{s}_+2.jpg","Autumn neuron":"thumbs/famous2-L46/n3410_{s}_+1.jpg","Wrought iron neuron":"thumbs/famous2-L46/n4422_{s}_+2.jpg",
+ "American flag neuron":"thumbs/famous2-L46/n3631_{s}_-2.jpg","Sand neuron":"thumbs/famous2-L46/n1691_{s}_+2.jpg","Marble relief neuron":"thumbs/famous2-L46/n417_{s}_-2.jpg",
+ "Wood engraving neuron":"thumbs/famous2-L46/n5017_{s}_-2.jpg","Knitted neuron":"thumbs/famous2-L10/n1419_{s}_-2.jpg","QR code neuron":"thumbs/famous2-L10/n3066_{s}_+2.jpg","Bronze statue neuron":"thumbs/famous2-L46/n3472_{s}_+2.jpg","Sketch neuron":"thumbs/famous2-L46/n4158_{s}_+2.jpg",
+ "Magenta neuron":"thumbs/famous2-L68/n953_{s}_+1.jpg","Purple neuron":"thumbs/famous2-L68/n66_{s}_+1.jpg"}
 
 FD="/System/Library/Fonts/Supplemental/"
 STYLE={  # name -> (font file, index, colour)
@@ -28,7 +37,16 @@ STYLE={  # name -> (font file, index, colour)
  "White flowers neuron":("Zapfino.ttf",0,(120,130,90)),"Van Gogh neuron":("Brush Script.ttf",0,(40,90,200)),"Herd neuron":("Rockwell.ttc",1,(170,40,40)),
  "Faces everywhere neuron":("Trattatello.ttf",0,(110,70,60)),"Crowd of faces neuron":("Trattatello.ttf",0,(110,70,60)),"Car neuron":("Futura.ttc",1,(200,40,40)),
  "Woman neuron":("Didot.ttc",2,(160,60,120)),"Fur neuron":("Chalkduster.ttf",0,(120,80,50)),"Barrels neuron":("Rockwell.ttc",1,(120,70,30)),"Persian rug neuron":("Luminari.ttf",0,(150,40,40)),
- "Clock face neuron":("Copperplate.ttc",1,(70,70,70)),"Ink drawing neuron":("SignPainter.ttc",0,(40,40,40)),"Mona Lisa neuron":("Didot.ttc",2,(110,80,40)),"Old master neuron":("Baskerville.ttc",2,(90,70,50)),"New York neuron":("Futura.ttc",2,(40,40,40)),"Christmas neuron":("Chalkboard.ttc",1,(180,30,30)),"Fairy lights neuron":("Luminari.ttf",0,(200,150,40))}
+ "Clock face neuron":("Copperplate.ttc",1,(70,70,70)),"Ink drawing neuron":("SignPainter.ttc",0,(40,40,40)),"Mona Lisa neuron":("Didot.ttc",2,(110,80,40)),"Old master neuron":("Baskerville.ttc",2,(90,70,50)),"New York neuron":("Futura.ttc",2,(40,40,40)),"Christmas neuron":("Chalkboard.ttc",1,(180,30,30)),"Fairy lights neuron":("Luminari.ttf",0,(200,150,40)),
+ "Plush toy neuron":("Chalkboard.ttc",1,(220,80,60)),"Bronze medallion neuron":("Copperplate.ttc",1,(150,100,40)),"Oscar statue neuron":("Didot.ttc",2,(190,150,40)),
+ "Tattoo neuron":("Impact.ttf",0,(40,40,40)),"Mannequin neuron":("Futura.ttc",2,(120,120,120)),"Cowboy hat neuron":("Rockwell.ttc",1,(140,80,30)),
+ "Gorilla neuron":("Impact.ttf",0,(60,40,30)),"Mech robot neuron":("Futura.ttc",2,(200,40,40)),"Funko Pop neuron":("Arial Black.ttf",0,(230,120,30)),
+ "3D cartoon neuron":("Comic Sans MS Bold.ttf",0,(40,120,200)),"Comic strip neuron":("Comic Sans MS Bold.ttf",0,(200,40,40)),"Cake neuron":("Chalkboard.ttc",1,(200,60,120)),
+ "Beard neuron":("Rockwell.ttc",1,(90,60,30)),"Gilded frame neuron":("Didot.ttc",2,(160,120,30)),"Pop art neuron":("Arial Black.ttf",0,(220,50,120)),
+ "Lego neuron":("Arial Black.ttf",0,(220,40,40)),"Autumn neuron":("Baskerville.ttc",2,(200,100,30)),"Wrought iron neuron":("Trattatello.ttf",0,(40,40,40)),
+ "American flag neuron":("Impact.ttf",0,(180,30,50)),"Sand neuron":("Papyrus.ttc",0,(170,130,80)),"Marble relief neuron":("Didot.ttc",0,(110,110,110)),
+ "Wood engraving neuron":("Trattatello.ttf",0,(90,60,40)),"Knitted neuron":("Chalkduster.ttf",0,(180,60,80)),"QR code neuron":("Courier New Bold.ttf",0,(30,30,30)),"Bronze statue neuron":("Copperplate.ttc",1,(140,90,40)),"Sketch neuron":("Bradley Hand Bold.ttf",0,(60,60,60)),
+ "Magenta neuron":("Phosphate.ttc",0,(220,20,120)),"Purple neuron":("Phosphate.ttc",0,(130,50,180))}
 def title_font(name, size):
     f,i,_=STYLE.get(name,("",0,ACC))
     try: return ImageFont.truetype(FD+f,size,index=i)
@@ -39,8 +57,8 @@ SCENES={
  "street":("a Tokyo street at night",["Buzz Lightyear neuron","Herd neuron","Zebra pattern neuron","Golden Gate (two neurons)","Ghibli neuron","Basketball neuron","Persian rug neuron","Kusama neuron","Van Gogh neuron","Bird of prey neuron","Drone shot neuron"]),
  "breakfast":("pancakes with syrup and berries",["Eye neuron","Basketball neuron","Ghibli neuron","Car neuron","Zebra pattern neuron","Persian rug neuron","Buzz Lightyear neuron","Kusama neuron","Van Gogh neuron","Skyscraper neuron"]),
  "portrait":("an old man with a grey beard",["Eye neuron","Buzz Lightyear neuron","Zebra pattern neuron","Basketball neuron","Bird of prey neuron","Kusama neuron","Van Gogh neuron","Skyscraper neuron","White flowers neuron","Dog neuron"]),
- "elon":("a photo of Elon Musk",["Buzz Lightyear neuron","Mona Lisa neuron","Zebra pattern neuron","Ghibli neuron","Christmas neuron","Kusama neuron","Bird of prey neuron","Basketball neuron","Car neuron","Van Gogh neuron","Dog neuron","Skyscraper neuron","Herd neuron","Ink drawing neuron"]),
- "zuck":("a photo of Mark Zuckerberg",["Eye neuron","Buzz Lightyear neuron","Mona Lisa neuron","Zebra pattern neuron","Basketball neuron","Ghibli neuron","Kusama neuron","Van Gogh neuron","Skyscraper neuron","Christmas neuron","Old master neuron","Bird of prey neuron","Drone shot neuron"]),
+ "elon":("a photo of Elon Musk",["Dog neuron","Buzz Lightyear neuron","Funko Pop neuron","Mona Lisa neuron","American flag neuron","Zebra pattern neuron","Plush toy neuron","Ghibli neuron","Oscar statue neuron","Gym bro neuron","Christmas neuron","Mech robot neuron","Kusama neuron","Pop art neuron","Lips neuron","3D cartoon neuron","Bird of prey neuron","Marble relief neuron","Basketball neuron","QR code neuron","Car neuron","Bronze statue neuron","Van Gogh neuron","Wrought iron neuron","Old master neuron","Sand neuron","Skyscraper neuron","Comic strip neuron","Cake neuron","Lego neuron","Gilded frame neuron","Wood engraving neuron","Magenta neuron","Ink drawing neuron"]),
+ "zuck":("a photo of Mark Zuckerberg",["Dog neuron","Buzz Lightyear neuron","Mona Lisa neuron","Zebra pattern neuron","Ghibli neuron","Christmas neuron","Kusama neuron","Bird of prey neuron","Basketball neuron","Car neuron","Van Gogh neuron","Old master neuron","Crowd of faces neuron","Skyscraper neuron","Ink drawing neuron"]),
  "dog":("a dog running on a beach",["Buzz Lightyear neuron","Ghibli neuron","Bird of prey neuron","Basketball neuron","Zebra pattern neuron","Kusama neuron","Van Gogh neuron","Skyscraper neuron","Golden Gate (two neurons)"]),
 }
 FAMOUS={"elon","zuck"}
@@ -51,7 +69,7 @@ def path_for(name, scene):
             G={"Eye neuron":("famous-L18",297,"-2"),"Buzz Lightyear neuron":("famous-L18",1505,"-2"),"Bird of prey neuron":("famous-L18",1532,"-2"),"Ghibli neuron":("famous-L18",300,"-2"),
                "Old face neuron":("famous-L18",3462,"-2"),"Horror neuron":("famous-L18",5097,"-2"),"Dog neuron":("famous-L18",2683,"-2"),"Drone shot neuron":("famous-L18",976,"+2")}
             r,n,d=G[name]; return f"thumbs/{r}/n{n}_{scene}_{d}.jpg"
-        return t.replace("demo-weird-L18","famous-L18").replace("demo-new-L18","famous-L18").replace("demo-new3-L18","famous-L18").replace("demo-weird-L46","famous-L46").replace("demo-new-L46","famous-L46").replace("demo-new3-L46","famous-L46").format(s=scene)
+        return t.replace("demo-weird-L18","famous-L18").replace("demo-new-L18","famous-L18").replace("demo-new3-L18","famous-L18").replace("demo-weird-L46","famous-L46").replace("demo-new-L46","famous-L46").replace("demo-new3-L46","famous-L46").format(s=scene) if not t.startswith("thumbs/famous2") else t.format(s=scene)
     return t.format(s=scene)
 scene, out = sys.argv[1], sys.argv[2]
 PROMPT, order = SCENES[scene]
