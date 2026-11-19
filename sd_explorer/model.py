@@ -52,10 +52,14 @@ class SDX:
         self.names = [short_name(n) for n, _, _ in self.layers]
         self.inner = [ff.net[2].in_features for _, _, ff in self.layers]
         self.dim = [ff.net[2].out_features for _, _, ff in self.layers]
+        self.steps = 1                                  # one UNet pass per image
+        self.patch = 32                                 # pixels per token in the 1280-dim blocks (d2, mid, u0)
+        self.t_img = (height // 32) * (width // 32)     # image tokens per 1280-dim block (256 at 512 px)
         self._embeds = {}
         self._steer = {}     # layer index -> [B, dim] push tensor (added at FF output)
         self._capture = {}   # layer index -> list of callables fed the GEGLU output [B, T, inner]
         self._resid = {}     # layer index -> list of callables fed the block output [B, T, dim]
+        self._edit = {}      # layer index -> list of callables hid [B, T, dim] -> hid (token-wise edits of the block output)
         self._handles = []
         self._install()
 
@@ -71,8 +75,11 @@ class SDX:
                 for fn in self._capture.get(li, ()):
                     fn(out)
             def blk_hook(mod, inp, out, li=li):
+                for fn in self._edit.get(li, ()):
+                    out = fn(out)  # token-wise edits (e.g. clamping an SAE feature)
                 for fn in self._resid.get(li, ()):
                     fn(out)
+                return out
             self._handles.append(ff.register_forward_hook(ff_hook))
             self._handles.append(ff.net[0].register_forward_hook(act_hook))
             self._handles.append(block.register_forward_hook(blk_hook))
@@ -92,6 +99,15 @@ class SDX:
             yield
         finally:
             self._steer = {}
+
+    @contextlib.contextmanager
+    def editing(self, edits):
+        """edits: {layer: fn(hid) -> hid}, applied to the block's output (the residual stream leaving it)."""
+        self._edit = {k: [v] for k, v in edits.items()}
+        try:
+            yield
+        finally:
+            self._edit = {}
 
     @contextlib.contextmanager
     def capturing(self, layers, fn, resid_fn=None):

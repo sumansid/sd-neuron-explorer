@@ -97,7 +97,7 @@ def main():
     sd = load_model(model, prewarm=[v[0] for v in prompts.values()])
     if a.size != 512:
         sd.h = sd.w = a.size
-        sd.t_img = (a.size // 16) * (a.size // 16)
+        sd.t_img = (a.size // getattr(sd, "patch", 16)) ** 2
     if a.steps:
         sd.steps = a.steps
     lens = Lens()
@@ -105,7 +105,7 @@ def main():
     dev = sd.device
 
     units = [("clamp", f) for f in feats] + [("clamp_random", f) for f in rand]
-    G = a.size // 16  # token grid side at this resolution
+    G = int(round(sd.t_img ** 0.5))  # token grid side at this resolution
     tok_mask = torch.ones(G * G, device=dev)
     if a.mask:
         parts = a.mask.split(":"); side, frac = parts[0], float(parts[1])

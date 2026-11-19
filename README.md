@@ -234,8 +234,8 @@ The same file carries each feature's Golden Gate z, density, top images and top 
 the feature sheets and describes a feature in the panel. A UNet (SDXL) has no shared residual stream across its
 blocks, so the model map shows its layers but draws no cross-layer links.
 
-`pod.sh` wraps SSH/rsync to a GPU pod (`push` code up, `pull` results down); set `POD_HOST` and `POD_PORT` first. `research_log.md` holds findings;
-`sheets/` the contact sheets behind them (the Golden Gate vector at L18, the brightness and saturation dials at L68).
+`pod.sh` wraps SSH/rsync to a GPU pod (`push` code up, `pull` results down); set `POD_HOST` and `POD_PORT` first. `sheets/` holds the contact sheets
+(the Golden Gate vector at L18, the brightness and saturation dials at L68).
 
 ## The bridge hunt: the image-model Golden Gate neuron
 
@@ -257,8 +257,7 @@ of bridge: L17 N868 (arch/girder: a bridge in every prompt), L18 N695 (suspensio
 suspension bridges everywhere, −2 removes the Golden Gate from prompts that ask for it. **L17 N868 + L18 N695 at +2
 each turn every prompt into a suspension bridge**, the boat's one orange; with the L68 red-tint dial at +0.5 they go
 International Orange. That pair is the image-model Golden Gate neuron: two neurons, not one. Presets "Golden Gate
-(2 neurons)", "Bridge" and "Suspension bridge" are in the generate view; figures in `gallery/golden_gate_*.jpg`,
-the full story in `research_log.md`.
+(2 neurons)", "Bridge" and "Suspension bridge" are in the generate view; figures in `gallery/golden_gate_*.jpg`.
 
 ## License
 
